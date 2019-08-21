@@ -1,3 +1,6 @@
+# Environment (includes Firebase info)
+src/environments/*
+
 # Built application files
 *.apk
 *.ap_

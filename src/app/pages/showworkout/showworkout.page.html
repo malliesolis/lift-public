@@ -1,0 +1,57 @@
+<ion-header>
+    <ion-toolbar color="primary">
+      <ion-buttons slot="start">
+        <ion-menu-button autoHide="false"></ion-menu-button>
+      </ion-buttons>
+
+      <ion-title>
+        Past Workouts
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content>
+    <ion-list>
+      
+      <ng-container *ngIf="!workouts || workouts.length == 0">
+          <div *ngFor="let n of [0, 1, 2]" padding>
+          <h2><ion-skeleton-text class="skeleton-header"></ion-skeleton-text></h2>
+          <p>
+            <ion-skeleton-text class="skeleton-date"></ion-skeleton-text>
+            <ion-skeleton-text class="skeleton-note"></ion-skeleton-text>
+            <ion-skeleton-text class="skeleton-note"></ion-skeleton-text>
+          </p>
+        </div>
+      </ng-container>
+  
+      <ion-item-sliding *ngFor="let item of workouts; let i = index">
+        <ion-item lines="inset">
+          <ion-label ion-padding class="workout-desc">
+            <h4>
+              <span *ngFor="let exercise of item.exercise, let i = index">{{ exercise.exerciseType.name | titlecase }}
+
+                <span *ngIf="(item.exercise.length > 1) && (item.exercise.length - 1) > i">| </span>
+
+              </span>
+            </h4>
+
+            <p padding-top>{{ item.note }}</p>  
+          </ion-label>
+          <ion-note slot="end" color="primary">
+              {{ item.date | date:'EEE MMM dd, yyyy' }}
+              <br><br>
+              {{ item.date | date:'HH:mm' }}
+          </ion-note>
+        </ion-item>
+  
+        <ion-item-options slide="end">
+          <ion-item-option (click)="remove(item, i)" color="danger">
+            Delete
+            <ion-icon name="trash" slot="end"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+      </ion-list>
+    
+  </ion-content>
+  

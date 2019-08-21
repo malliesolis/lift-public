@@ -1,0 +1,15 @@
+// App Styles
+// ----------------------------------------------------------------------------
+// Put style rules here that you want to apply to the entire application. These 
+// styles are for the entire app and not just one component. Additionally, this 
+// file can hold Sass mixins, functions, and placeholder classes to be imported 
+// and used throughout the application.
+
+/* Select - Word wrapping and padding between items */
+div.alert-radio-label.sc-ion-alert-md {
+    white-space: pre-line;
+}
+
+button div.alert-button-inner.sc-ion-alert-md {
+    padding-bottom: 20px;
+}

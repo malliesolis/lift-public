@@ -1,0 +1,112 @@
+<ion-header>
+  <ion-toolbar color="primary">
+
+    <ion-buttons slot="start">
+      <ion-menu-button autoHide="false"></ion-menu-button>
+    </ion-buttons>
+
+    <ion-title>
+      Log Workout
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon slot="icon-only" name="log-out"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+
+  <ng-container *ngFor="let exercise of workout.exercise; let i = index">
+
+    <ion-row>
+      <ion-col size="12">
+        <ion-item>
+          <ion-label>Exercise</ion-label>
+          <ion-select placeholder="Select Exercise" (ngModel)="exercise.exerciseType.name" (ionChange)="selectExerciseTypeById($event)">
+            <ion-select-option
+              *ngFor="let exerciseType of exerciseTypes"
+              value="{{ exerciseType.storageId }},{{ i }}">
+                {{ exerciseType.name | titlecase }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <!-- Sets Data - RepCount / Weight / Time -->
+    <div padding *ngFor="let set of exercise.sets; let j = index">
+      <ion-row *ngIf="exercise.exerciseType.name && exercise.exerciseType.hasWeights && j == 0">
+        <ion-col size="12" class="grey">
+          <ion-label>Show warm up recommendation?</ion-label>
+          <ion-checkbox color="warning" [(ngModel)]="showWarmUp[i]"></ion-checkbox>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="showWarmUp[i] && exercise.exerciseType.name && exercise.exerciseType.hasWeights && j == 0">
+        <ion-col size="12" class="warmup">
+          <span *ngIf="set.weight == null" >
+              Please enter first set's weight to view recommended warmup weight.
+          </span>
+          <span *ngIf="set.weight != null" >
+            Recommended Warmup: 12 reps at {{set.weight/2}}lbs, 10 reps at {{set.weight/2}}lbs, 8 reps at {{set.weight*.75}}
+         </span>
+        </ion-col>
+      </ion-row>
+
+      <ion-label>Set #{{ j+1 }}</ion-label>
+      <ion-row>
+        <ion-col size="6" *ngIf="exercise.exerciseType.basedOn == 'reps'">
+          <ion-item>
+            <ion-input required type="number" placeholder="Rep Count" [(ngModel)]="set.repCount"></ion-input>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size="6" *ngIf="exercise.exerciseType.hasWeights">
+          <ion-item>
+            <ion-input required type="number" placeholder="Weight (lbs)" [(ngModel)]="set.weight"></ion-input>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size="6" *ngIf="exercise.exerciseType.basedOn == 'time'">
+          <ion-item>
+            <ion-label>Time</ion-label>
+            <ion-datetime display-format="HH:mm:ss" placeholder="00:00:00" [(ngModel)]="set.time"></ion-datetime>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+    </div>  
+
+    <ion-item>
+      <ion-textarea spellcheck="true" placeholder="Exercise #{{i+1}} Note" [(ngModel)]="exercise.note"></ion-textarea>
+    </ion-item>
+
+    <hr>
+
+  </ng-container>
+
+  <ion-item>
+    <ion-textarea spellcheck="true" placeholder="Overall Workout Note" [(ngModel)]="workout.note"></ion-textarea>
+  </ion-item>
+
+    <!-- <ion-list lines="full">
+
+      <ion-item>
+        <ion-label>Date</ion-label>
+        <ion-datetime display-format="MMM DD, YYYY" [(ngModel)]=workout.date>{{ workout.date | date:'fullDate' }}</ion-datetime>
+      </ion-item>      
+    </ion-list> -->
+
+    <ion-button expand="full" (click)="saveWorkout()">Save</ion-button>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button color="secondary">
+        <ion-icon name="timer" (click)="presentCountdown()"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+</ion-content>

@@ -22,16 +22,16 @@ export class ExerciseType implements IStorageObject {
 	/**
 	 * The muscle groups of the exercise that are in this exercise type. These values are persisted.
 	 */
-	muscleGroup: MuscleGroup[];
+	muscleGroupsUsed: MuscleGroup[];
 	
 	/**
-	 * What the exercise is based on (time / reps)of the exercise that are in this exercise type. These values are persisted.
+	 * What the exercise is based on (time / reps) of the exercise that are in this exercise type. These values are persisted.
 	 */
 	basedOn: string;
 
 	/**
 	 * True if ExerciseType has weights that are used, else false. These values are persisted.
 	 */
-	hasWeights: boolean;
+	usesWeights: boolean;
 
 }

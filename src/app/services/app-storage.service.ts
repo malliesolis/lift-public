@@ -34,9 +34,7 @@ export class AppStorage {
 
     constructor() {
         this.database = firebase.firestore();
-        let settings: firestore.Settings = {
-            timestampsInSnapshots: true
-        };
+        let settings: firestore.Settings = {};
         this.database.settings(settings);
 
         this.exerciseTypeCache = [];
@@ -122,7 +120,7 @@ export class AppStorage {
    * have the storageId for the new exerciseTypes.
    * @memberof AppStorage
    */
-  public addExerciseType(exerciseType: ExerciseType): Promise<ExerciseType> {
+  public addExercise(exerciseType: ExerciseType): Promise<ExerciseType> {
       let matchingExerciseType: ExerciseType = this.exerciseTypeCache.find((et: ExerciseType) => {
           return (et.storageId && et.storageId === exerciseType.storageId)
               || (et.name === exerciseType.name);
@@ -194,8 +192,8 @@ export class AppStorage {
 		let storageExerciseType: ExerciseType = {
       name: exerciseType.name,
       basedOn: exerciseType.basedOn,
-      hasWeights: exerciseType.hasWeights,
-      muscleGroup: exerciseType.muscleGroup
+      usesWeights: exerciseType.usesWeights,
+      muscleGroupsUsed: exerciseType.muscleGroupsUsed
 		};
 
 		this.updateObject<ExerciseType>(exerciseType, storageExerciseType, this.exerciseTypesCollection);

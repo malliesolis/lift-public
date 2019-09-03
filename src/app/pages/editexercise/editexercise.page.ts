@@ -2,7 +2,7 @@ import { AppStorage } from './../../services/app-storage.service';
 import { Component, OnInit } from '@angular/core';
 import { MuscleGroup } from './../../../models/MuscleGroup';
 import { LoadingController, NavController } from '@ionic/angular';
-import { ExerciseType } from 'src/models/ExerciseType';
+import { ExerciseType as ExerciseDetails } from 'src/models/ExerciseType';
 
 @Component({
   selector: 'app-editexercise',
@@ -12,35 +12,36 @@ import { ExerciseType } from 'src/models/ExerciseType';
 
 export class EditExercisePage implements OnInit {
   muscleGroups : MuscleGroup [];
-  exerciseType: ExerciseType = {
+  exerciseDetails: ExerciseDetails = {
     name: '',
     basedOn : 'reps',
-    hasWeights : true,
-    muscleGroup: []
+    usesWeights : true,
+    muscleGroupsUsed: []
   };
 
-  // exerciseTypeId : null;
-
-  constructor(private appStorage: AppStorage, private loadingController : LoadingController, private navController : NavController) {}
+  constructor(
+    private appStorage: AppStorage,
+    private loadingController : LoadingController,
+    private navController : NavController ) {}
 
   ngOnInit() {
-    this.appStorage.getMuscleGroups().then((muscleGroupStorage: MuscleGroup[]) => {
-      this.muscleGroups = muscleGroupStorage;
+    this.appStorage.getMuscleGroups().then((muscleGroupCache: MuscleGroup[]) => {
+      this.muscleGroups = muscleGroupCache;
     });
 
-    this.setUpShellExerciseType();
+    this.setUpShellExerciseDetail();
   }
 
   ionViewWillEnter() {
-    this.setUpShellExerciseType();
+    this.setUpShellExerciseDetail();
   }
 
-  private setUpShellExerciseType() {
-    this.exerciseType = {
+  private setUpShellExerciseDetail() {
+    this.exerciseDetails = {
       name: '',
       basedOn : 'reps',
-      hasWeights : true,
-      muscleGroup: []
+      usesWeights : true,
+      muscleGroupsUsed: []
     };
   }
 
@@ -51,18 +52,10 @@ export class EditExercisePage implements OnInit {
     });
     await loading.present();
 
-    // if (this.exerciseTypeId) {
-    //   this.appStorage.updateExerciseType(this.exerciseType)
-    // } else {
-      this.appStorage.addExerciseType(this.exerciseType);      
-    // }
+    this.appStorage.addExercise(this.exerciseDetails);
 
     loading.dismiss();
     this.navController.back(); 
-
-    console.log('ngOnInit');
-    console.log(this.muscleGroups);
-
   }
 
 }

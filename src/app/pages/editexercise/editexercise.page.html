@@ -11,39 +11,41 @@
 <ion-content>
   <ion-item>
     <ion-label>Exercise Name</ion-label>
-    <ion-input [(ngModel)]="exerciseType.name" clearInput></ion-input>
+    <ion-input [(ngModel)]="exerciseDetails.name" clearInput></ion-input>
   </ion-item>
-      
+
   <ion-item>
     <ion-label>Muscle Group(s)</ion-label>
-    <ion-select [(ngModel)]="exerciseType.muscleGroup" cancelText="cancel" multiple="true" okText="Done">      
-      <ion-select-option *ngFor="let item of muscleGroups">{{ item.name | titlecase }}</ion-select-option>
+    <ion-select [(ngModel)]="exerciseDetails.muscleGroupsUsed" cancelText="cancel" multiple="true" okText="Done">
+      <ion-select-option *ngFor="let muscleGroup of muscleGroups">{{ muscleGroup.name | titlecase }}</ion-select-option>
     </ion-select>
   </ion-item>
 
   <ion-item>
-    <ion-label>Has Weights?</ion-label>
-    <ion-checkbox checked="true" [(ngModel)]="exerciseType.hasWeights"></ion-checkbox>
+    <ion-label>Are weights used?</ion-label>
+    <ion-checkbox checked="true" [(ngModel)]="exerciseDetails.usesWeights"></ion-checkbox>
   </ion-item>
 
-  <ion-list [ngModel]="exerciseType.basedOn">
-      <ion-radio-group>
+  <ion-list (ngModel)="exerciseDetails.basedOn">
+
+     <ion-radio-group>
         <ion-list-header>
-          <ion-label>Exercise is based on...</ion-label>
+          <ion-label>This movement is based on...</ion-label>
         </ion-list-header>
     
         <ion-item>
           <ion-label>Reps</ion-label>
           <ion-radio slot="start" value="reps" checked></ion-radio>
         </ion-item>
-    
+
         <ion-item>
           <ion-label>Time</ion-label>
           <ion-radio slot="start" value="time"></ion-radio>
         </ion-item>
       </ion-radio-group>
+
     </ion-list>
     
-  <ion-button expand="full" (click)="saveExercise()">Save</ion-button>
+  <ion-button expand="full" (click)="saveExercise()">Save Exercise</ion-button>
 
 </ion-content>

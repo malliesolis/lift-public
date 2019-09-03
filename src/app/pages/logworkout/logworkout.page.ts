@@ -34,6 +34,7 @@ export class LogWorkoutPage implements OnInit {
   ngOnInit() {          
     this.setUpShellWorkout();
 
+    //TODO: If navigated from Edit-Exercise, refresh cache from appStorage
     this.appStorage.getExerciseTypes().then((etStorage : ExerciseType[]) => {
       this.exerciseTypes = etStorage;
 
@@ -54,6 +55,7 @@ export class LogWorkoutPage implements OnInit {
     this.setUpShellWorkout();
   }
 
+  //TODO: Make closeable
   async presentCountdown() {
     const loadingElement = await this.loadingController.create({
       message: 'Rest up, Champ... Begin again in... '+ this.timeLeft,
@@ -122,12 +124,12 @@ export class LogWorkoutPage implements OnInit {
       let shellExercise : Exercise = {
         exerciseType : {
           name : '',
-          muscleGroup : [
+          muscleGroupsUsed : [
             {
               name: ''
             }
           ],
-          hasWeights : true,
+          usesWeights : true,
           basedOn: 'reps'
         }, 
         note : '',

@@ -57,18 +57,20 @@ export class LogWorkoutPage implements OnInit {
 
   //TODO: Make closeable
   async presentCountdown() {
-    const loadingElement = await this.loadingController.create({
-      message: 'Rest up, Champ... Begin again in... '+ this.timeLeft,
-      spinner: 'crescent',
-      duration: 1000 * 61
-    });
 
     this.timeLeft = 60;
+
+    const loadingElement = await this.loadingController.create({
+      message: 'Rest up, Champ... Begin again in... '+ this.timeLeft + ' seconds.',
+      spinner: 'crescent',
+      backdropDismiss: true,
+      duration: 1000 * 60
+    });
 
     this.interval = setInterval(() => {
       if (this.timeLeft > 0) {
         this.timeLeft--;
-        loadingElement.setAttribute('message', 'Rest up, Champ... Begin again in ' + this.timeLeft + ' seconds.');
+        loadingElement.setAttribute('message', 'Rest up, Champ... Begin again in... ' + this.timeLeft + ' seconds.');
       } else {
         //Stop Timer after 1 Minute
         clearInterval(this.interval);
@@ -78,16 +80,23 @@ export class LogWorkoutPage implements OnInit {
     await loadingElement.present();
 
     await loadingElement.onDidDismiss();
-    this.presentAlert();
+    if (this.timerReachedZero()) {
+      this.presentAlert();
+    }
+  }
+
+  private timerReachedZero(): boolean {
+    console.log("time left = " + this.timeLeft);
+    return this.timeLeft == 0;
   }
 
   async presentAlert() {
-    this.vibration.vibrate(500);
+    this.vibration.vibrate(250);
 
     const alert = await this.alertController.create({
       header: 'It\'s GO Time!',
       subHeader: 'You\'ve rested enough.',
-      message: 'Good, better, best. Never let it rest, \'till your good is better and your better is best!',
+      message: 'If you think lifting is dangerous, try being weak.',
       buttons: ['Ready!']
     });
 

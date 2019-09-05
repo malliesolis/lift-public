@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Workout } from './../../../models/Workout';
 import { AppStorage } from 'src/app/services/app-storage.service';
-import { ActivatedRoute } from '@angular/router';
 import { LoadingController, NavController, AlertController } from '@ionic/angular';
 import { AuthenticationService } from 'src/app/services/authentication.service';
 import { ExerciseType } from 'src/models/ExerciseType';
@@ -24,73 +23,66 @@ export class LogWorkoutPage implements OnInit {
 
   timeLeft = 60;
   interval;
+  ONE_SECOND : number = 1000;
 
-  private readonly resetClock : string = "00:00:00";
+  private readonly zeroClock : string = "00:00:00";
 
-  constructor(private appStorage : AppStorage, private router : ActivatedRoute, private loadingController : LoadingController, 
+  constructor(private appStorage : AppStorage, private loadingController : LoadingController, 
     private navController : NavController, private authenticationService : AuthenticationService,
     private alertController : AlertController, private vibration: Vibration) {}
 
   ngOnInit() {          
     this.setUpShellWorkout();
 
-    //TODO: If navigated from Edit-Exercise, refresh cache from appStorage
-    this.appStorage.getExerciseTypes().then((etStorage : ExerciseType[]) => {
-      this.exerciseTypes = etStorage;
-
-      this.exerciseTypes.sort((leftSide, rightSide): number => {
-        if (leftSide.name < rightSide.name) return -1;
-        if (leftSide.name > rightSide.name) return 1;
-        return 0;
-      });
-    });
-
-    // this.workoutId = this.router.snapshot.params['id'];
-    //   if (this.workoutId) {
-    //     this.loadWorkout();
-    //   }   
+    this.getExerciseTypes();
   }
 
   ionViewWillEnter() {
     this.setUpShellWorkout();
   }
 
-  //TODO: Make closeable
-  async presentCountdown() {
+  getExerciseTypes() {
+    //TODO: If navigated from Edit-Exercise, refresh cache from appStorage (might be a new exercise to add to list)
+    this.appStorage.getExerciseTypes().then((etLocalCache : ExerciseType[]) => {
+      this.exerciseTypes = etLocalCache;
 
+      this.exerciseTypes.sort((etLeft, etRight): number => {
+        if (etLeft.name < etRight.name) return -1;
+        if (etLeft.name > etRight.name) return 1;
+        return 0;
+      });
+    });
+  }
+
+  async startRestTimer() {
     this.timeLeft = 60;
 
     const loadingElement = await this.loadingController.create({
-      message: 'Rest up, Champ... Begin again in... '+ this.timeLeft + ' seconds.',
+      message: this.getTimerMessage(this.timeLeft),
       spinner: 'crescent',
       backdropDismiss: true,
       duration: 1000 * 60
     });
 
     this.interval = setInterval(() => {
-      if (this.timeLeft > 0) {
+      if (!this.timerReachedZero()) {
         this.timeLeft--;
-        loadingElement.setAttribute('message', 'Rest up, Champ... Begin again in... ' + this.timeLeft + ' seconds.');
-      } else {
-        //Stop Timer after 1 Minute
+        loadingElement.setAttribute('message', this.getTimerMessage(this.timeLeft));
+      }
+      else {
         clearInterval(this.interval);
       }
-    }, 1000);
+    }, this.ONE_SECOND);
 
     await loadingElement.present();
 
     await loadingElement.onDidDismiss();
     if (this.timerReachedZero()) {
-      this.presentAlert();
+      this.showReadyAlert();
     }
   }
 
-  private timerReachedZero(): boolean {
-    console.log("time left = " + this.timeLeft);
-    return this.timeLeft == 0;
-  }
-
-  async presentAlert() {
+  async showReadyAlert() {
     this.vibration.vibrate(250);
 
     const alert = await this.alertController.create({
@@ -111,9 +103,11 @@ export class LogWorkoutPage implements OnInit {
     let notFound : boolean = true;
 
     this.exerciseTypes.forEach((exerciseType: ExerciseType) => {
-      if(notFound && exerciseType.storageId === exerciseTypeId) {
-        this.workout.exercise[index].exerciseType = exerciseType;
-        notFound = false;
+      if(notFound) {
+        if (exerciseType.storageId === exerciseTypeId) {
+          this.workout.exercise[index].exerciseType = exerciseType;
+          notFound = false;
+        }
       }
     });
   }
@@ -146,40 +140,27 @@ export class LogWorkoutPage implements OnInit {
             {
               repCount : null,
               weight : null,
-              time : this.resetClock
+              time : this.zeroClock
             },
             {
               repCount : null,
               weight : null,
-              time : this.resetClock
+              time : this.zeroClock
             },
             {
               repCount : null,
               weight : null,
-              time : this.resetClock
+              time : this.zeroClock
           }
           ]
       }
 
       this.workout.exercise.push(shellExercise);
 
-      // Default value is true only for the first exercise
+      // Default value TRUE only for first exercise
       this.showWarmUp.push(index == 0);
     }
   }
-
-  // async loadWorkout() {
-  //   const loading = await this.loadingController.create({
-  //     message: 'Loading Workout...',
-  //     animated: true
-  //   });
-  //   await loading.present();
-
-  //   this.appStorage.getWorkout(this.workoutId).then((storageWorkout: Workout) => {
-  //     loading.dismiss();
-  //     this.workout = storageWorkout;
-  //   });
-  // }
 
   async saveWorkout() {
     const loading = await this.loadingController.create({
@@ -187,22 +168,23 @@ export class LogWorkoutPage implements OnInit {
       animated: true
     });
     await loading.present();
-    let objectJson = JSON.parse(JSON.stringify(this.workout));
-    console.log(objectJson);
 
-    if (this.workoutId) {
-      this.appStorage.updateWorkout(this.workout);
+    this.appStorage.addWorkout(this.workout).then(() => {
       loading.dismiss();
-      this.navController.back(); 
-    } else {
-      this.appStorage.addWorkout(this.workout).then(() => {
-        loading.dismiss();
-        this.navController.navigateForward('/members/show-workout');
-      })
-    }
+      this.navController.navigateForward('/members/show-workout');
+    })
   }
 
   logout() {
     this.authenticationService.logout();
   }
+
+  private getTimerMessage(timeLeft : number) : string {
+    return 'Rest up, Champ... Begin again in... ' + timeLeft + ' seconds.';
+  }
+
+  private timerReachedZero(): boolean {
+    return this.timeLeft == 0;
+  }
+
 }

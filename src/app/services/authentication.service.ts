@@ -26,7 +26,6 @@ export class AuthenticationService {
     return this.storage.remove(TOKEN_KEY).then(res => {
       this.authenticationState.next(false);
     })
-
   }
 
   isAuthenticated() {

@@ -179,11 +179,11 @@ export class LogWorkoutPage implements OnInit {
     this.authenticationService.logout();
   }
 
-  private getTimerMessage(timeLeft : number) : string {
+  public getTimerMessage(timeLeft : number) : string {
     return 'Rest up, Champ... Begin again in... ' + timeLeft + ' seconds.';
   }
 
-  private timerReachedZero(): boolean {
+  public timerReachedZero(): boolean {
     return this.timeLeft == 0;
   }
 

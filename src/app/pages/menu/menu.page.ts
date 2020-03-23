@@ -14,6 +14,11 @@ export class MenuPage implements OnInit {
       icon: 'body'
     },
     {
+      title: 'Edit Workout',
+      url: '/members/menu/edit-workout',
+      icon: 'create'
+    },
+    {
       title: 'History',
       url: '/members/menu/show-workout',
       icon: 'paper'

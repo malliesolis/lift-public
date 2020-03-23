@@ -171,7 +171,7 @@ export class LogWorkoutPage implements OnInit {
 
     this.appStorage.addWorkout(this.workout).then(() => {
       loading.dismiss();
-      this.navController.navigateForward('/members/show-workout');
+      this.navController.navigateRoot('/members/show-workout');
     })
   }
 

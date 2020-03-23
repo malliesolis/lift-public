@@ -1,6 +1,7 @@
 import { AppStorage } from './../../services/app-storage.service';
 import { Component, OnInit } from '@angular/core';
 import { Workout } from './../../../models/Workout';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-showworkout',
@@ -10,7 +11,7 @@ import { Workout } from './../../../models/Workout';
 export class ShowWorkoutPage implements OnInit {
   workouts: Workout[];
 
-  constructor(private appStorage: AppStorage) {}
+  constructor(private appStorage: AppStorage, private navController : NavController) {}
 
   ngOnInit() {
     this.appStorage.getWorkouts().then((storageWorkouts: Workout[]) => {
@@ -26,6 +27,16 @@ export class ShowWorkoutPage implements OnInit {
   }
 
   /**
+   *
+   * Redirect to edit workout page.
+   *
+   * @param workout
+   */
+  editWorkout(workout) {
+    this.navController.navigateForward('/members/edit-workout');
+  }
+
+  /**
    * Remove deleted workout from view and from database.
    *
    * @param workout
@@ -34,7 +45,7 @@ export class ShowWorkoutPage implements OnInit {
   remove(workout, index) {
     this.appStorage.deleteWorkout(workout);
 
-    if(index > -1){
+    if (index > -1) {
       this.workouts.splice(index, 1);
     }
   }
